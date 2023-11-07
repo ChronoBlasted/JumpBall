@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MenuPanel : Panel
 {
+
     public override void Init()
     {
         base.Init();

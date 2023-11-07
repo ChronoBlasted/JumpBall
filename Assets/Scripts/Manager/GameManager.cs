@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public enum GameState { MENU, GAME, PAUSE, END, WAIT }
+public enum GameState { MENU, GAME, PAUSE }
 
 public class GameManager : MonoSingleton<GameManager>
 {
@@ -17,6 +17,8 @@ public class GameManager : MonoSingleton<GameManager>
     GameState _gameState;
 
     Coroutine _launchGameCoroutine;
+
+    public bool PlayerCanPlay;
 
     public GameState GameState { get => _gameState; }
 
@@ -37,7 +39,7 @@ public class GameManager : MonoSingleton<GameManager>
 
         PlayerController.Instance.Init();
 
-        ResetGame();
+        UpdateGameState(GameState.MENU);
     }
 
     private void Update()
@@ -63,12 +65,6 @@ public class GameManager : MonoSingleton<GameManager>
             case GameState.PAUSE:
                 HandlePause();
                 break;
-            case GameState.END:
-                HandleEnd();
-                break;
-            case GameState.WAIT:
-                HandleWait();
-                break;
             default:
                 break;
         }
@@ -89,30 +85,14 @@ public class GameManager : MonoSingleton<GameManager>
         Time.timeScale = 0;
     }
 
-    void HandleEnd()
-    {
-    }
-
-    void HandleWait()
-    {
-    }
-
     public void UpdateStateToMenu() => UpdateGameState(GameState.MENU);
     public void UpdateStateToGame() => UpdateGameState(GameState.GAME);
     public void UpdateStateToPause() => UpdateGameState(GameState.PAUSE);
-    public void UpdateStateToEnd() => UpdateGameState(GameState.END);
 
     public void ReloadScene()
     {
         DOTween.KillAll();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void ResetGame()
-    {
-        UIManager.Instance.InitPanel();
-
-        UpdateGameState(GameState.MENU);
     }
 
     public void QuitApp() => Application.Quit();

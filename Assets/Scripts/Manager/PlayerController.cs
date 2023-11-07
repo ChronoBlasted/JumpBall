@@ -1,6 +1,7 @@
 using BaseTemplate.Behaviours;
 using Cinemachine;
 using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoSingleton<PlayerController>
@@ -17,10 +18,23 @@ public class PlayerController : MonoSingleton<PlayerController>
     bool _canCastBlade;
 
     public Rigidbody2D RB { get => _RB; }
-    public bool CanCastBlade { get => _canCastBlade; }
+    public float BladeSpeed { get => _bladeSpeed; }
+    public bool CanCastBlade { get => _canCastBlade; set => _canCastBlade = value; }
 
     public void Init()
     {
+
+    }
+
+    public void OnGameStart()
+    {
+        StartCoroutine(SpawnPlayer());
+    }
+
+    IEnumerator SpawnPlayer()
+    {
+        yield return new WaitForSeconds(1f);
+
         _canCastBlade = true;
     }
 

@@ -1,39 +1,44 @@
 using BaseTemplate.Behaviours;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 
 public class UIManager : MonoSingleton<UIManager>
 {
     [SerializeField] MenuPanel _menuPanel;
-    [SerializeField] SettingPanel _settingPanel;
-
     [SerializeField] GamePanel _gamePanel;
+
+    [SerializeField] SettingPanel _settingPanel;
     [SerializeField] PausePanel _pausePanel;
-    [SerializeField] EndGamePanel _endGamePanel;
+    [SerializeField] ShopPanel _shopPanel;
+    [SerializeField] LeaderboardPanel _leaderboardPanel;
 
     [SerializeField] BlankPanel _blankPanel;
 
-    Panel _currentPanel;
+    Panel _currentPanel, _lastPanel;
 
     public MenuPanel MenuPanel { get => _menuPanel; }
     public GamePanel GamePanel { get => _gamePanel; }
+    public ShopPanel ShopPanel { get => _shopPanel; }
+    public LeaderboardPanel LeaderboardPanel { get => _leaderboardPanel; }
+    public SettingPanel SettingPanel { get => _settingPanel; }
+    public Panel CurrentPanel { get => _currentPanel; }
 
     public void Init()
     {
+        InitPanel();
+
         GameManager.Instance.OnGameStateChanged += HandleStateChange;
 
-        InitPanel();
+        ChangePanel(_menuPanel);
     }
 
     public void InitPanel()
     {
         _menuPanel.Init();
         _gamePanel.Init();
-        _endGamePanel.Init();
+        _shopPanel.Init();
         _pausePanel.Init();
         _settingPanel.Init();
+        _leaderboardPanel.Init();
     }
 
     void ChangePanel(Panel newPanel, bool _isAddingCanvas = false)
@@ -49,15 +54,16 @@ public class UIManager : MonoSingleton<UIManager>
             }
         }
 
+        _lastPanel = _currentPanel;
         _currentPanel = newPanel;
 
         _currentPanel.gameObject.SetActive(true);
         _currentPanel.OpenPanel();
     }
 
-    void ClosePanel(Panel newPanel)
+    public void OpenLastPanel()
     {
-        newPanel.ClosePanel();
+        ChangePanel(_lastPanel);
     }
 
     #region GameState
@@ -75,45 +81,39 @@ public class UIManager : MonoSingleton<UIManager>
             case GameState.PAUSE:
                 HandlePause();
                 break;
-            case GameState.END:
-                HandleEnd();
-                break;
-            case GameState.WAIT:
-                HandleWait();
-                break;
             default:
                 break;
         }
-
     }
 
     void HandleMenu()
     {
         ChangePanel(_menuPanel);
     }
+
     void HandleGame()
     {
         ChangePanel(_gamePanel);
     }
+
     void HandlePause()
     {
         ChangePanel(_pausePanel, true);
-    }
-    void HandleEnd()
-    {
-        ChangePanel(_endGamePanel);
-    }
-    void HandleWait()
-    {
-    }
-    public void HandleRevive()
-    {
-        ChangePanel(_gamePanel);
     }
 
     public void HandleOpenSettings()
     {
         ChangePanel(_settingPanel, true);
+    }
+
+    public void HandleOpenShop()
+    {
+        ChangePanel(_shopPanel, true);
+    }
+
+    public void HandleOpenLeaderboard()
+    {
+        ChangePanel(_leaderboardPanel, true);
     }
 
     public void HandleOpenBlank()
@@ -122,5 +122,4 @@ public class UIManager : MonoSingleton<UIManager>
     }
 
     #endregion
-
 }

@@ -4,27 +4,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CurrencyType { NONE, BANANA, CHERRY, APPLE }
+
 public class ProfileManager : MonoSingleton<ProfileManager>
 {
-    [SerializeField] int _coins;
+    [SerializeField] int _banana, _cherry, _apple;
+    [SerializeField] int _altitude, _maxAltitude;
 
-    public float Coins { get => _coins; }
+    public float Coins { get => _banana; }
+
+    PlayerController _playerController;
 
     public void Init()
     {
-        _coins = SaveHandler.LoadValue("coins", 0);
+        _banana = SaveHandler.LoadValue("banana", 0);
+        _cherry = SaveHandler.LoadValue("cherry", 0);
+        _apple = SaveHandler.LoadValue("apple", 0);
+
+        _maxAltitude = SaveHandler.LoadValue("maxAltitude", 0);
+
+        _playerController = PlayerController.Instance;
     }
 
-    public void ResetProfile()
+    public void Update()
     {
+        if (_playerController.transform.position.y != _altitude) UpdateAltitude();
     }
 
-    public void UpdateCoin(int amount)
+    public void UpdateAltitude()
     {
-        _coins += amount;
+        _altitude = (int)_playerController.transform.position.y;
 
-        if (_coins < 0) _coins = 0;
+        if (_altitude > _maxAltitude) _maxAltitude = _altitude;
 
-        SaveHandler.SaveValue("coins", _coins);
+        UIManager.Instance.GamePanel.UpdateAltitude(_altitude, _maxAltitude);
+    }
+
+    public void UpdateCurrency(CurrencyType currencyType, int amount)
+    {
+        switch (currencyType)
+        {
+            case CurrencyType.NONE:
+                break;
+            case CurrencyType.BANANA:
+                _banana += amount;
+                if (_banana < 0) _banana = 0;
+                SaveHandler.SaveValue("banana", _banana);
+                UIManager.Instance.GamePanel.UpdateCurrency(currencyType, _banana);
+                break;
+
+            case CurrencyType.CHERRY:
+                _cherry += amount;
+                if (_cherry < 0) _cherry = 0;
+                SaveHandler.SaveValue("cherry", _cherry);
+                UIManager.Instance.GamePanel.UpdateCurrency(currencyType, _cherry);
+                break;
+
+            case CurrencyType.APPLE:
+                _apple += amount;
+                if (_apple < 0) _apple = 0;
+                SaveHandler.SaveValue("apple", _apple);
+                UIManager.Instance.GamePanel.UpdateCurrency(currencyType, _apple);
+                break;
+        }
     }
 }
