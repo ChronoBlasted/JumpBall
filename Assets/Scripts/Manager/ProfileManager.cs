@@ -17,30 +17,45 @@ public class ProfileManager : MonoSingleton<ProfileManager>
 
     public void Init()
     {
+        _playerController = PlayerController.Instance;
+
+        LoadData();
+        InitValue();
+    }
+
+    void LoadData()
+    {
         _banana = SaveHandler.LoadValue("banana", 0);
         _cherry = SaveHandler.LoadValue("cherry", 0);
         _apple = SaveHandler.LoadValue("apple", 0);
 
         _maxAltitude = SaveHandler.LoadValue("maxAltitude", 0);
-
-        _playerController = PlayerController.Instance;
     }
 
-    public void Update()
+    void InitValue()
     {
-        if (_playerController.transform.position.y != _altitude) UpdateAltitude();
+        AddCurrency(CurrencyType.BANANA, 0);
+        AddCurrency(CurrencyType.CHERRY, 0);
+        AddCurrency(CurrencyType.APPLE, 0);
+
+        UpdateAltitude();
+    }
+
+    void Update()
+    {
+        if (_playerController.transform.position.y * 10 != _altitude) UpdateAltitude();
     }
 
     public void UpdateAltitude()
     {
-        _altitude = (int)_playerController.transform.position.y;
+        _altitude = (int)(_playerController.transform.position.y * 10);
 
         if (_altitude > _maxAltitude) _maxAltitude = _altitude;
 
         UIManager.Instance.GamePanel.UpdateAltitude(_altitude, _maxAltitude);
     }
 
-    public void UpdateCurrency(CurrencyType currencyType, int amount)
+    public void AddCurrency(CurrencyType currencyType, int amount)
     {
         switch (currencyType)
         {

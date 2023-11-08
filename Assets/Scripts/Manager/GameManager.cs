@@ -18,10 +18,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     Coroutine _launchGameCoroutine;
 
-    public bool PlayerCanPlay;
-
     public GameState GameState { get => _gameState; }
-
+    public bool PlayerCanPlay;
 
     private void Awake()
     {

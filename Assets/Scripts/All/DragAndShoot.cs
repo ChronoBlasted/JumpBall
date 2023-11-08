@@ -21,6 +21,7 @@ public class DragAndShoot : MonoBehaviour
     Touch _touch;
 
     bool _isStartDone = false;
+    bool _isNewInputAfterAllOk = false;
 
     PlayerController _playerController;
     Camera _camera;
@@ -37,7 +38,12 @@ public class DragAndShoot : MonoBehaviour
     {
         if ((_playerController.IsGrounded() || _playerController.IsWalled(Vector2.left) || _playerController.IsWalled(Vector2.right)) && _playerController.CanCastBlade && GameManager.Instance.PlayerCanPlay)
         {
-            if (Input.touchCount > 0)
+            if (_isNewInputAfterAllOk == false && Input.touchCount == 0)
+            {
+                _isNewInputAfterAllOk = true;
+            }
+
+            if (Input.touchCount > 0 && _isNewInputAfterAllOk)
             {
                 _touch = Input.GetTouch(0);
 
@@ -63,6 +69,8 @@ public class DragAndShoot : MonoBehaviour
         }
         else
         {
+            _isNewInputAfterAllOk = false;
+
             if (_isStartDone)
             {
                 _lineRenderer.positionCount = 0;

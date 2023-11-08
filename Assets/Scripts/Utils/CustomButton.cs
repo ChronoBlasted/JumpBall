@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 namespace Chrono.UI
 {
@@ -15,8 +16,6 @@ namespace Chrono.UI
 
         [SerializeField] float _timeOfScale = .2f;
 
-
-
         public override void OnPointerDown(PointerEventData eventData)
         {
             base.OnPointerDown(eventData);
@@ -24,6 +23,9 @@ namespace Chrono.UI
             if (!interactable) return;
 
             //AudioManager.Instance.PlaySound("Button");
+
+            GameManager.Instance.PlayerCanPlay = false;
+
 
             switch (_type)
             {
@@ -45,10 +47,12 @@ namespace Chrono.UI
                     ResetScaleElement();
                     break;
             }
+
+            GameManager.Instance.PlayerCanPlay = true;
         }
 
-        private void ScaleDownElement() => _rt.DOScale(new Vector3(.95f, .95f, .95f), _timeOfScale).SetEase(Ease.OutExpo);
-        private void ResetScaleElement() => _rt.DOScale(Vector3.one, _timeOfScale).SetEase(Ease.OutExpo);
+        private void ScaleDownElement() => _rt.DOScale(new Vector3(.95f, .95f, .95f), _timeOfScale).SetEase(Ease.OutExpo).SetUpdate(UpdateType.Normal, true);
+        private void ResetScaleElement() => _rt.DOScale(Vector3.one, _timeOfScale).SetEase(Ease.OutExpo).SetUpdate(UpdateType.Normal, true);
     }
 }
 

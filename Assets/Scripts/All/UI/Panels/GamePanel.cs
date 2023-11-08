@@ -28,6 +28,7 @@ public class GamePanel : Panel
         base.ClosePanel();
 
         GameManager.Instance.PlayerCanPlay = false;
+
         PlayerController.Instance.CanCastBlade = false;
     }
 

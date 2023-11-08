@@ -23,19 +23,8 @@ public class PlayerController : MonoSingleton<PlayerController>
 
     public void Init()
     {
-
-    }
-
-    public void OnGameStart()
-    {
-        StartCoroutine(SpawnPlayer());
-    }
-
-    IEnumerator SpawnPlayer()
-    {
-        yield return new WaitForSeconds(1f);
-
         _canCastBlade = true;
+
     }
 
     private void Update()

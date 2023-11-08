@@ -13,6 +13,7 @@ public class FruitController : MonoBehaviour
 {
     [SerializeField] FruitType _fruitType;
     [SerializeField] Animator _animator;
+    [SerializeField] BoxCollider2D _boxCollider;
 
     private void Start()
     {
@@ -35,6 +36,21 @@ public class FruitController : MonoBehaviour
         if (collision.gameObject.layer == 15 || collision.gameObject.layer == 10)
         {
             _animator.Play("CollectFruit");
+
+            switch (_fruitType)
+            {
+                case FruitType.APPLE:
+                    ProfileManager.Instance.AddCurrency(CurrencyType.APPLE, 1);
+                    break;
+                case FruitType.BANANA:
+                    ProfileManager.Instance.AddCurrency(CurrencyType.BANANA, 1);
+                    break;
+                case FruitType.CHERRIES:
+                    ProfileManager.Instance.AddCurrency(CurrencyType.CHERRY, 1);
+                    break;
+            }
+
+            _boxCollider.enabled = false;
         }
     }
 }
