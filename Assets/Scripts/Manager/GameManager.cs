@@ -23,6 +23,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void Awake()
     {
+        DontDestroyOnLoad(this);
+
         Time.timeScale = 1;
 
         Application.targetFrameRate = 60;
@@ -37,7 +39,9 @@ public class GameManager : MonoSingleton<GameManager>
 
         PlayerController.Instance.Init();
 
-        UpdateGameState(GameState.MENU);
+        LevelLoader.Instance.Init();
+
+        UpdateStateToMenu();
     }
 
     private void Update()
@@ -51,6 +55,8 @@ public class GameManager : MonoSingleton<GameManager>
     public void UpdateGameState(GameState newState)
     {
         _gameState = newState;
+
+        Debug.Log(_gameState);
 
         switch (_gameState)
         {

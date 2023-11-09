@@ -36,7 +36,7 @@ public class DragAndShoot : MonoBehaviour
 
     private void Update()
     {
-        if ((_playerController.IsGrounded() || _playerController.IsWalled(Vector2.left) || _playerController.IsWalled(Vector2.right)) && _playerController.CanCastBlade && GameManager.Instance.PlayerCanPlay)
+        if ((_playerController.IsGrounded() || _playerController.IsWalled(Vector2.left) || _playerController.IsWalled(Vector2.right)) && _playerController.CanCastBlade && GameManager.Instance.PlayerCanPlay && UIManager.Instance.CurrentPanel == UIManager.Instance.GamePanel)
         {
             if (_isNewInputAfterAllOk == false && Input.touchCount == 0)
             {
@@ -50,7 +50,6 @@ public class DragAndShoot : MonoBehaviour
                 if (_touch.phase == TouchPhase.Began || _isStartDone == false)
                 {
                     DragStart();
-
                 }
 
                 if (_touch.phase == TouchPhase.Moved)

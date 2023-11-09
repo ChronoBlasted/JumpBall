@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 4004123791431909392}
   - component: {fileID: 8329604908254855575}
   m_Layer: 0
-  m_Name: Collectible
+  m_Name: FruitCollectible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -187,6 +187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fruitType: 1
   _animator: {fileID: 7890977479398599830}
+  _boxCollider: {fileID: 8329604908254855575}
 --- !u!212 &4004123791431909392
 SpriteRenderer:
   m_ObjectHideFlags: 0

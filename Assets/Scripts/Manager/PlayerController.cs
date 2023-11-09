@@ -11,9 +11,13 @@ public class PlayerController : MonoSingleton<PlayerController>
     [SerializeField] Rigidbody2D _RB;
     [SerializeField] BoxCollider2D _collider;
     [SerializeField] CinemachineTargetGroup _targetGroup;
+    [SerializeField] CinemachineVirtualCamera _virtualCamera;
+    [SerializeField] SpriteRenderer _spriteRenderer;
+    [SerializeField] GameObject _lastStandGO;
 
     [SerializeField] float _bladeSpeed, _maxFallSpeed;
 
+    Vector3 _lastStandPos;
     GameObject _lastBlade;
     bool _canCastBlade;
 
@@ -23,8 +27,20 @@ public class PlayerController : MonoSingleton<PlayerController>
 
     public void Init()
     {
-        _canCastBlade = true;
+        _spriteRenderer.enabled = false;
+        _canCastBlade = false;
+    }
 
+    public void OnStartLevel()
+    {
+        _spriteRenderer.enabled = true;
+        _canCastBlade = true;
+    }
+
+    public void OnEndLevel()
+    {
+        _spriteRenderer.enabled = false;
+        _canCastBlade = false;
     }
 
     private void Update()
@@ -32,6 +48,12 @@ public class PlayerController : MonoSingleton<PlayerController>
         IsGrounded();
         IsWalled(Vector2.left);
         IsWalled(Vector2.right);
+
+        if (IsGrounded() && !IsWalled(Vector2.left) && !IsWalled(Vector2.right))
+        {
+            _lastStandPos = transform.position;
+            _lastStandGO.transform.position = _lastStandPos;
+        }
     }
 
     public bool IsGrounded()
@@ -73,7 +95,9 @@ public class PlayerController : MonoSingleton<PlayerController>
 
         projectileRigidbody.velocity += _RB.velocity;
 
-        _targetGroup.AddMember(_lastBlade.transform, 1, 0);
+        _virtualCamera.Follow = _lastBlade.transform;
+        _virtualCamera.LookAt = _lastBlade.transform;
+        // _targetGroup.AddMember(_lastBlade.transform, 1, 0);
     }
 
     public void TeleportToBlade(Vector3 impulseOnHit, Vector3 bladeVelocity)
@@ -82,14 +106,18 @@ public class PlayerController : MonoSingleton<PlayerController>
         else if (bladeVelocity.x > 0f) _playerAnimator.SetFlipX(false);
 
         _RB.velocity = Vector3.zero;
+        _collider.enabled = false;
 
         _lastBlade.SetActive(false);
 
         transform.DOMove(_lastBlade.transform.position, .1f).OnComplete(() =>
         {
-            _targetGroup.RemoveMember(_lastBlade.transform);
+            // _targetGroup.RemoveMember(_lastBlade.transform);
+            _virtualCamera.Follow = transform;
+            _virtualCamera.LookAt = transform;
 
             _canCastBlade = true;
+            _collider.enabled = true;
 
             if (impulseOnHit != Vector3.zero)
             {
@@ -107,22 +135,24 @@ public class PlayerController : MonoSingleton<PlayerController>
         _canCastBlade = true;
     }
 
-    public void GetKnockBack()
+    public void GetKnockBack(Vector3 impulse)
     {
         _RB.velocity = Vector3.zero;
 
-        var side = Random.Range(0, 2);
-        var randomImpulse = Vector3.zero;
+        int side = Random.Range(0, 2);
 
-        if (side == 0) randomImpulse = new Vector3(Random.Range(-.5f, -.25f), 1, 0);
-        else { randomImpulse = new Vector3(Random.Range(.25f, .5f), 1, 0); }
+        if (impulse == Vector3.zero)
+        {
+            if (side == 0) impulse = new Vector3(Random.Range(-.5f, -.25f), 1, 0);
+            else { impulse = new Vector3(Random.Range(.25f, .5f), 1, 0); }
+        }
 
-        _RB.AddForce(randomImpulse * 3, ForceMode2D.Impulse);
+        _RB.AddForce(impulse * 3, ForceMode2D.Impulse);
     }
 
     public void GetHit()
     {
-        GetKnockBack();
+        GetKnockBack(Vector3.zero);
 
         _playerAnimator.PlayerHit();
 
@@ -135,12 +165,20 @@ public class PlayerController : MonoSingleton<PlayerController>
         {
             if (collision.gameObject.tag == "Spike")
             {
-                GetHit();
+                transform.position = _lastStandPos;
             }
 
             if (collision.gameObject.tag == "Jumper")
             {
-                GetKnockBack();
+
+                if (collision.gameObject.transform.position.x > collision.contacts[0].point.x)
+                {
+                    GetKnockBack(new Vector3(Random.Range(-.5f, -.25f), 1, 0));
+                }
+                else
+                {
+                    GetKnockBack(new Vector3(Random.Range(.25f, .5f), 1, 0));
+                }
             }
         }
     }
