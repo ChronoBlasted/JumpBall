@@ -14,6 +14,8 @@ public class GameManager : MonoSingleton<GameManager>
 {
     public event Action<GameState> OnGameStateChanged;
 
+    public List<LevelManager> LevelManagers;
+
     GameState _gameState;
 
     Coroutine _launchGameCoroutine;

@@ -49,11 +49,13 @@ public class PlayerController : MonoSingleton<PlayerController>
         IsWalled(Vector2.left);
         IsWalled(Vector2.right);
 
-        if (IsGrounded() && !IsWalled(Vector2.left) && !IsWalled(Vector2.right))
+        if (IsGrounded() && _RB.velocity.y == 0)
         {
             _lastStandPos = transform.position;
             _lastStandGO.transform.position = _lastStandPos;
         }
+
+        int indexLevel = (int)(transform.position.y / 5.5f);
     }
 
     public bool IsGrounded()
@@ -73,7 +75,7 @@ public class PlayerController : MonoSingleton<PlayerController>
 
         if (raycastHit.collider != null)
         {
-            if (_RB.velocity.y <= 0f) _RB.velocity = new Vector2(_RB.velocity.x, -1);
+            if (_RB.velocity.y < 0f) _RB.velocity = new Vector2(_RB.velocity.x, -1);
 
             return true;
         }
@@ -97,6 +99,7 @@ public class PlayerController : MonoSingleton<PlayerController>
 
         _virtualCamera.Follow = _lastBlade.transform;
         _virtualCamera.LookAt = _lastBlade.transform;
+
         // _targetGroup.AddMember(_lastBlade.transform, 1, 0);
     }
 
@@ -130,7 +133,10 @@ public class PlayerController : MonoSingleton<PlayerController>
     {
         _lastBlade.SetActive(false);
 
-        _targetGroup.RemoveMember(_lastBlade.transform);
+        //_targetGroup.RemoveMember(_lastBlade.transform);
+
+        _virtualCamera.Follow = transform;
+        _virtualCamera.LookAt = transform;
 
         _canCastBlade = true;
     }
@@ -165,13 +171,18 @@ public class PlayerController : MonoSingleton<PlayerController>
         {
             if (collision.gameObject.tag == "Spike")
             {
-                transform.position = _lastStandPos;
+                _collider.enabled = false;
+
+                transform.DOMove(_lastStandPos, .1f).OnComplete(() =>
+                {
+                    _collider.enabled = true;
+                });
             }
 
             if (collision.gameObject.tag == "Jumper")
             {
 
-                if (collision.gameObject.transform.position.x > collision.contacts[0].point.x)
+                if (collision.gameObject.transform.position.x > transform.position.x)
                 {
                     GetKnockBack(new Vector3(Random.Range(-.5f, -.25f), 1, 0));
                 }

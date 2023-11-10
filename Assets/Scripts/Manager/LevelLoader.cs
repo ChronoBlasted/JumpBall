@@ -12,19 +12,30 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     Coroutine _levelLoadingCor;
 
     int _indexCurrentLevel;
+
+    public int IndexCurrentLevel { get => _indexCurrentLevel; }
+
     public void Init()
     {
         _indexCurrentLevel = SaveHandler.LoadValue("IndexLevel", 1);
 
-        LoadScene(_indexCurrentLevel);
+        LoadScene(_indexCurrentLevel, LoadSceneMode.Single);
+
+        LoadScene(_indexCurrentLevel + 1);
+        LoadScene(_indexCurrentLevel + 2);
+        LoadScene(_indexCurrentLevel + 3);
+        LoadScene(_indexCurrentLevel + 4);
     }
+
+
 
     private void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    LoadNextLevel();
-                }*/
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            LoadNextLevel();
+        }
     }
 
     public void LoadNextLevel()
@@ -43,13 +54,13 @@ public class LevelLoader : MonoSingleton<LevelLoader>
 
         yield return new WaitForSeconds(_transitionTime);
 
-        SceneManager.LoadSceneAsync(levelIndex);
+        LoadScene(levelIndex);
 
         _transitionAnimator.SetTrigger("End");
     }
 
-    public void LoadScene(int index)
+    public void LoadScene(int index, LoadSceneMode loadSceneMode = LoadSceneMode.Additive)
     {
-        SceneManager.LoadScene(index);
+        SceneManager.LoadScene(index, loadSceneMode);
     }
 }
