@@ -14,6 +14,8 @@ public class PlayerController : MonoSingleton<PlayerController>
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
     [SerializeField] SpriteRenderer _spriteRenderer;
     [SerializeField] GameObject _lastStandGO;
+    public ParticleSystem _VFX;
+
 
     [SerializeField] float _bladeSpeed, _maxFallSpeed;
 
